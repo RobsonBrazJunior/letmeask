@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { FormEvent, useState } from 'react';
 import { useParams } from 'react-router-dom'
 
@@ -14,12 +15,57 @@ type RoomParams = {
     id: string;
 }
 
+type FirebaseQuestions = Record<string, {
+    author: {
+        name: string;
+        avatar: string;
+    }
+    content: string;
+    isAnswered: boolean;
+    isHighLighted: boolean;
+}>
+
+type Question = {
+    id: string;
+    author: {
+        name: string;
+        avatar: string;
+    }
+    content: string;
+    isAnswered: boolean;
+    isHighLighted: boolean;
+}
+
 export function Room() {
     const { user } = useAuth();
     const params = useParams<RoomParams>();
     const [newQuestion, setNewQuestion] = useState('');
+    const [questions, setQuestions] = useState<Question[]>([]);
+    const [title, setTitle] = useState('');
 
     const roomId = params.id;
+
+    useEffect(() => {
+        const roomRef = database.ref(`romms/${roomId}`);
+
+        roomRef.on('value', room => {
+            const databaseRoom = room.val();
+            const firebaseQuestions: FirebaseQuestions = databaseRoom.questions ?? {};
+
+            const parsedQuestions = Object.entries(firebaseQuestions).map(([key, value]) => {
+                return {
+                    id: key,
+                    content: value.content,
+                    author: value.author,
+                    isHighLighted: value.isHighLighted,
+                    isAnswered: value.isAnswered,
+                }
+            })
+
+            setTitle(databaseRoom.title);
+            setQuestions(parsedQuestions);
+        })
+    }, [roomId])
 
     async function handleSendQuestion(event: FormEvent) {
         event.preventDefault();
@@ -58,8 +104,8 @@ export function Room() {
 
             <main>
                 <div className="room-title">
-                    <h1>React Room</h1>
-                    <span>4 Questions</span>
+                    <h1>Room {title}</h1>
+                    {questions.length > 0 && <span>{questions.length} Question(s)</span>}
                 </div>
 
                 <form onSubmit={handleSendQuestion}>
@@ -81,6 +127,8 @@ export function Room() {
                         <Button type="submit" disabled={!user}>Submit a question</Button>
                     </div>
                 </form>
+
+                {JSON.stringify(questions)}
             </main>
         </div>
     );

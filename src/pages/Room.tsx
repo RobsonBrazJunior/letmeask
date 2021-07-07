@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { FormEvent, useState } from 'react';
+import { useEffect, FormEvent, useState } from 'react';
 import { useParams } from 'react-router-dom'
 
 import logoImg from '../assets/images/logo.svg';
@@ -10,10 +9,6 @@ import { useAuth } from '../hooks/useAuth';
 import { database } from '../services/firebase';
 
 import '../styles/room.scss'
-
-type RoomParams = {
-    id: string;
-}
 
 type FirebaseQuestions = Record<string, {
     author: {
@@ -36,6 +31,10 @@ type Question = {
     isHighLighted: boolean;
 }
 
+type RoomParams = {
+    id: string;
+}
+
 export function Room() {
     const { user } = useAuth();
     const params = useParams<RoomParams>();
@@ -46,7 +45,7 @@ export function Room() {
     const roomId = params.id;
 
     useEffect(() => {
-        const roomRef = database.ref(`romms/${roomId}`);
+        const roomRef = database.ref(`rooms/${roomId}`);
 
         roomRef.on('value', room => {
             const databaseRoom = room.val();

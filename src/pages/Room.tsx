@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import logoImg from '../assets/images/logo.svg';
 
 import { Button } from '../components/Button';
-import { Question } from '../components/Question';
+import { Question } from '../components/Question/index';
 import { RoomCode } from '../components/RoomCode';
 import { useAuth } from '../hooks/useAuth';
 import { database } from '../services/firebase';

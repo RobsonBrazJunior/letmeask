@@ -1,4 +1,4 @@
-import '../styles/question.scss'
+import '../Question/styles.scss';
 
 type QuestionProps = {
     content: string;
